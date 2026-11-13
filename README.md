@@ -17,6 +17,59 @@ Repo ini berisi dua versi:
 | **Web (demo)** | `web/index.html`, dua peran (penanggung jawab & admin), peringatan otomatis, 20 test otomatis | **https://rivaldimhr.github.io/kingshand/** |
 | **Desktop (asli)** | Aplikasi JavaFX hasil Tugas Besar IF2050, data di Firebase | Unduh dari [Releases](https://github.com/rivaldimhr/KINGSHANDs/releases/tag/latest) |
 
+## Diagram aktivitas
+
+Alur utama aplikasi, dari proposal sampai laporan. Kolom kiri adalah penanggung jawab, kolom tengah sistem, kolom kanan admin.
+
+```mermaid
+flowchart TB
+  subgraph PJ["Penanggung jawab"]
+    A1([Mulai]) --> A2[Masuk]
+    A2 --> A3[Isi form proposal + lampiran]
+    A3 --> A4[Ajukan]
+    A9[Lihat notifikasi & alasan] --> A10[Perbaiki lalu ajukan ulang]
+    A10 --> A4
+    A11[Proyek aktif: kirim laporan<br>progres % atau dana terpakai] --> A12{Ada peringatan<br>atau revisi?}
+    A12 -- Ya --> A11
+    A12 -- Tidak --> A13([Proyek berjalan normal])
+  end
+  subgraph SYS["Sistem"]
+    B1{Form lengkap?}
+    B2[Simpan proposal<br>status: Menunggu]
+    B3[Perbarui grafik<br>& cek aturan peringatan]
+    B4[Kirim notifikasi]
+  end
+  subgraph ADM["Admin lembaga"]
+    C1[Tinjau proposal] --> C2{Layak?}
+    C2 -- Ya --> C3[Setujui]
+    C2 -- Tidak --> C4[Tolak + tulis alasan]
+    C5[Periksa laporan] --> C6{Sesuai?}
+    C6 -- Ya --> C7[Terima]
+    C6 -- Tidak --> C8[Minta revisi + catatan]
+  end
+  A4 --> B1
+  B1 -- Tidak --> A3
+  B1 -- Ya --> B2 --> C1
+  C3 --> B4 --> A11
+  C4 --> A9
+  A11 --> B3 --> C5
+  C7 --> A12
+  C8 --> A12
+```
+
+### Kapan proyek diberi peringatan
+
+```mermaid
+flowchart LR
+  P[Proyek aktif] --> Q1{"Dana terpakai %<br>− progres % ≥ 15?"}
+  Q1 -- Ya --> W1[⚠ Dana lebih cepat dari progres]
+  P --> Q2{"Laporan perkembangan<br>terakhir > 30 hari?"}
+  Q2 -- Ya --> W2[⚠ Laporan terlambat]
+  P --> Q3{"Ada laporan<br>diminta revisi?"}
+  Q3 -- Ya --> W3[⚠ Laporan perlu revisi]
+  W1 & W2 & W3 --> D[Muncul di 'Perlu perhatian'<br>untuk PJ dan admin]
+```
+
 ## Versi web
 
 ![Dashboard penanggung jawab](doc/web/dashboard.png)
