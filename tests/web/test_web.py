@@ -248,3 +248,15 @@ def test_tampilan_ponsel_tanpa_gulir_horizontal(mobile_page):
         pg.wait_for_timeout(100)
         overflow = pg.evaluate("document.documentElement.scrollWidth - document.documentElement.clientWidth")
         assert overflow <= 1, f"Halaman {target} melebar {overflow}px di layar 390px"
+
+
+def test_tampilan_ponsel_dengan_font_lebar(mobile_page):
+    """Font di setiap komputer berbeda; paksa font yang lebar agar masalah tata letak ikut terlihat."""
+    pg = mobile_page
+    pg.add_style_tag(content="*{font-family:'DejaVu Sans',Verdana,sans-serif!important;letter-spacing:.02em}")
+    login(pg, "pj")
+    for target in ["dashboard", "projects", "proposal", "project/2", "profile"]:
+        pg.evaluate(f"location.hash='{target}'")
+        pg.wait_for_timeout(100)
+        overflow = pg.evaluate("document.documentElement.scrollWidth - document.documentElement.clientWidth")
+        assert overflow <= 1, f"Halaman {target} melebar {overflow}px di layar 390px"

@@ -50,6 +50,7 @@ Aturan: (a) dana terpakai (% anggaran) melebihi progres pekerjaan ≥ 15 poin; (
 | TC-18 | Notifikasi dibaca | Klik ikon lonceng | Panel terbuka, penanda jumlah belum dibaca hilang | `test_membuka_notifikasi_menandai_sudah_dibaca` |
 | TC-19 | Data tersimpan dan reset | Ajukan proposal, muat ulang halaman, lalu klik Reset data | Proposal masih ada setelah dimuat ulang, lalu hilang setelah reset | `test_data_tersimpan_setelah_muat_ulang_dan_bisa_direset` |
 | TC-20 | Tampilan ponsel | Buka dashboard, proyek, proposal, dan detail di layar 390 px | Tidak ada halaman yang melebar hingga perlu digulir ke samping | `test_tampilan_ponsel_tanpa_gulir_horizontal` |
+| TC-21 | Ponsel dengan font lebar | Seperti TC-20, tetapi font dipaksa ke font yang lebih lebar (font tiap perangkat berbeda) | Tidak ada halaman yang melebar. Test ini ditambahkan setelah CI menemukan halaman Proposal melebar 18 px | `test_tampilan_ponsel_dengan_font_lebar` |
 
 ## Menjalankan sendiri
 
