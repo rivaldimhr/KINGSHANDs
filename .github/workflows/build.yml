@@ -11,6 +11,21 @@ permissions:
   contents: write
 
 jobs:
+  web-test:
+    name: Test versi web (Playwright)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Pasang pytest + Playwright
+        run: |
+          pip install -q pytest playwright
+          python -m playwright install --with-deps chromium
+      - name: Jalankan test
+        run: python -m pytest tests/web -v
+
   build:
     runs-on: ubuntu-latest
     steps:
