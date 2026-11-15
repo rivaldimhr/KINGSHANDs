@@ -112,7 +112,7 @@ Jika garis oranye jauh di atas garis hijau, dana habis lebih cepat daripada peke
 
 ### Pengujian
 
-Terdapat 21 test end-to-end (Playwright + pytest) yang mencakup login dan hak akses, alur proposal dua peran, peringatan otomatis, pemeriksaan laporan, validasi form, dan tampilan ponsel. Semuanya berjalan di GitHub Actions setiap ada push. Daftar skenario lengkap ada di [docs/TEST_CASES.md](docs/TEST_CASES.md).
+Terdapat 25 test end-to-end (Playwright + pytest) yang mencakup login dan hak akses, alur proposal dua peran, peringatan otomatis, pemeriksaan laporan, validasi form, tampilan ponsel, dan 4 test regresi untuk bug yang ditemukan saat pengujian eksploratif ([laporan bug](https://github.com/rivaldimhr/qa-automation-portfolio/blob/main/docs/bug-reports.md)). Semuanya berjalan di GitHub Actions setiap ada push. Daftar skenario lengkap ada di [docs/TEST_CASES.md](docs/TEST_CASES.md).
 
 ```bash
 pip install pytest playwright && python -m playwright install chromium
