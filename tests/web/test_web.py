@@ -238,6 +238,86 @@ def test_data_tersimpan_setelah_muat_ulang_dan_bisa_direset(page):
     expect(page.locator("#propTable")).not_to_contain_text("Proposal Uji Reset")
 
 
+# ---------- Regresi: bug yang ditemukan saat pengujian eksploratif ----------
+# Laporan bug lengkap: https://github.com/rivaldimhr/qa-automation-portfolio/blob/main/docs/bug-reports.md
+
+def _kirim(page, kind, value, nama="laporan.pdf"):
+    page.set_input_files(f"#up-{kind}", fake_file(nama))
+    page.fill(f"#val-{kind}", str(value))
+    page.click(f"#send-{kind}")
+
+
+def _minta_revisi(page, nama_file, catatan):
+    nav(page, "Laporan masuk")
+    row = page.locator("#reportQueue tr", has_text=nama_file)
+    row.locator("input").fill(catatan)
+    row.locator("[data-rev]").click()
+
+
+def test_progres_bisa_dikoreksi_setelah_diminta_revisi(page):
+    """BUG-01: progres yang terlanjur terlalu tinggi harus bisa diturunkan setelah admin meminta revisi."""
+    login(page, "pj")
+    open_project(page, "Cafe Le' de Jainero")
+    _kirim(page, "dev", 95, "laporan-salah.pdf")
+    logout(page)
+    login(page, "admin")
+    _minta_revisi(page, "laporan-salah.pdf", "Progres sebenarnya 70%")
+    logout(page)
+    login(page, "pj")
+    open_project(page, "Cafe Le' de Jainero")
+    _kirim(page, "dev", 70, "laporan-benar.pdf")
+    expect(page.locator(".report-form[data-kind=dev] .err")).to_have_text("")
+    expect(page.locator("#detailProgress")).to_have_text("70%")
+    _kirim(page, "dev", 60, "lebih-rendah.pdf")   # di bawah progres yang sudah diterima (63%) tetap ditolak
+    expect(page.locator(".report-form[data-kind=dev] .err")).to_contain_text("tidak boleh turun")
+
+
+def test_peringatan_revisi_hilang_setelah_laporan_diganti(page):
+    """BUG-02: setelah PJ mengirim laporan pengganti, peringatan "perlu revisi" tidak tampil lagi."""
+    login(page, "admin")
+    _minta_revisi(page, "Progres-Unit-Pilah.pdf", "Lampirkan foto")
+    logout(page)
+    login(page, "pj")
+    open_project(page, "Bank Sampah Cikutra")
+    expect(page.locator("#detailAlerts")).to_contain_text("perlu revisi")
+    _kirim(page, "dev", 90, "Progres-Unit-Pilah-revisi.pdf")
+    expect(page.locator("#detailAlerts")).not_to_contain_text("perlu revisi")
+    expect(page.locator("#rep-dev")).to_contain_text("Diganti laporan baru")
+
+
+def test_dana_melebihi_anggaran_memicu_peringatan(page):
+    """BUG-03: dana terpakai di atas 100% anggaran tidak boleh dianggap aman."""
+    login(page, "pj")
+    open_project(page, "Bank Sampah Cikutra")
+    _kirim(page, "dev", 100, "progres-akhir.pdf")
+    _kirim(page, "keu", 130, "keuangan-akhir.pdf")      # anggaran Rp 120 juta
+    expect(page.locator("#detailAlerts")).to_contain_text("Dana terpakai melebihi anggaran")
+    expect(page.locator("#detailAlerts")).to_contain_text("108%")
+
+
+def test_persetujuan_mempertahankan_rencana_mulai(page):
+    """BUG-04: bulan mulai yang direncanakan PJ tidak boleh diganti bulan persetujuan."""
+    import datetime
+    d = datetime.date.today().replace(day=1) + datetime.timedelta(days=95)
+    rencana = d.strftime("%Y-%m")
+    login(page, "pj")
+    nav(page, "Proposal")
+    page.fill("#fJudul", "Taman Baca Anak")
+    page.fill("#fLokasi", "Cimahi")
+    page.fill("#fTarget", "Anak SD")
+    page.fill("#fDana", "50")
+    page.fill("#fMulai", rencana)
+    page.fill("#fDesk", "Taman baca untuk anak SD.")
+    page.click("#propSubmit")
+    logout(page)
+    login(page, "admin")
+    nav(page, "Evaluasi proposal")
+    page.locator(".review-card", has_text="Taman Baca Anak").locator("[data-approve]").click()
+    open_project(page, "Taman Baca Anak")
+    bulan = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"][d.month - 1]
+    expect(page.locator("#detail .facts")).to_contain_text(f"{bulan} {d.year}")
+
+
 # ---------- Tampilan ponsel ----------
 
 def test_tampilan_ponsel_tanpa_gulir_horizontal(mobile_page):

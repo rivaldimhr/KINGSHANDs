@@ -3,3 +3,5 @@ out/
 javafx-sdk-*/
 .vscode/
 *.class
+__pycache__/
+*.pyc

@@ -1,6 +1,6 @@
 # Test case: King's Hand (versi web)
 
-Semua skenario di bawah dijalankan otomatis oleh `tests/web/test_web.py` (Playwright + pytest) di setiap push lewat GitHub Actions. Setiap test memakai browser baru, sehingga data contoh selalu mulai dari kondisi awal. Selain hasil yang diharapkan, setiap test juga gagal bila muncul error JavaScript di halaman.
+Semua skenario di bawah dijalankan otomatis oleh `tests/web/test_web.py` (25 test) (Playwright + pytest) di setiap push lewat GitHub Actions. Setiap test memakai browser baru, sehingga data contoh selalu mulai dari kondisi awal. Selain hasil yang diharapkan, setiap test juga gagal bila muncul error JavaScript di halaman.
 
 Akun demo: penanggung jawab (PJ) `demo@kingshand.id` / `demo123`, admin `admin@kingshand.id` / `admin123`.
 
@@ -51,6 +51,17 @@ Aturan: (a) dana terpakai (% anggaran) melebihi progres pekerjaan ≥ 15 poin; (
 | TC-19 | Data tersimpan dan reset | Ajukan proposal, muat ulang halaman, lalu klik Reset data | Proposal masih ada setelah dimuat ulang, lalu hilang setelah reset | `test_data_tersimpan_setelah_muat_ulang_dan_bisa_direset` |
 | TC-20 | Tampilan ponsel | Buka dashboard, proyek, proposal, dan detail di layar 390 px | Tidak ada halaman yang melebar hingga perlu digulir ke samping | `test_tampilan_ponsel_tanpa_gulir_horizontal` |
 | TC-21 | Ponsel dengan font lebar | Seperti TC-20, tetapi font dipaksa ke font yang lebih lebar (font tiap perangkat berbeda) | Tidak ada halaman yang melebar. Test ini ditambahkan setelah CI menemukan halaman Proposal melebar 18 px | `test_tampilan_ponsel_dengan_font_lebar` |
+
+## Regresi: bug dari pengujian eksploratif
+
+Ditemukan saat pengujian eksploratif ([laporan bug](https://github.com/rivaldimhr/qa-automation-portfolio/blob/main/docs/bug-reports.md)), diperbaiki, lalu dijaga test ini. Setiap test sudah dicek gagal di versi sebelum perbaikan.
+
+| ID | Bug | Langkah | Hasil yang diharapkan | Test otomatis |
+|---|---|---|---|---|
+| TC-22 | BUG-01 | PJ melaporkan progres 95%, admin minta revisi, PJ mengirim koreksi 70% | Koreksi diterima dan progres menjadi 70%. Nilai di bawah progres yang sudah diterima (63%) tetap ditolak | `test_progres_bisa_dikoreksi_setelah_diminta_revisi` |
+| TC-23 | BUG-02 | Admin minta revisi laporan Bank Sampah, PJ mengirim laporan pengganti | Peringatan "perlu revisi" hilang; laporan lama berstatus "Diganti laporan baru" | `test_peringatan_revisi_hilang_setelah_laporan_diganti` |
+| TC-24 | BUG-03 | Bank Sampah (anggaran Rp 120 juta): progres 100%, dana terpakai Rp 130 juta | Peringatan "Dana terpakai melebihi anggaran" (108%) | `test_dana_melebihi_anggaran_memicu_peringatan` |
+| TC-25 | BUG-04 | PJ mengajukan proposal dengan rencana mulai 3 bulan lagi, admin menyetujui | Bulan mulai proyek tetap sesuai rencana | `test_persetujuan_mempertahankan_rencana_mulai` |
 
 ## Menjalankan sendiri
 
